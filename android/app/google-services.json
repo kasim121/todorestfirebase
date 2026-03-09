@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "349104987687",
+    "project_id": "todorestfb",
+    "storage_bucket": "todorestfb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349104987687:android:c565f0e745df988f99b802",
+        "android_client_info": {
+          "package_name": "com.example.todo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3DyF74Fmg7xh_RiIZC-fcF1vZH44jqdA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
