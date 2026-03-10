@@ -101,11 +101,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
                 ),
                 const SizedBox(height: 40),
-                // Error message
                 if (authProvider.errorMessage != null)
                   _ErrorBanner(message: authProvider.errorMessage!),
                 const SizedBox(height: 8),
-                // Email
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -122,7 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Password
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -145,7 +142,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 8),
-                // Forgot password
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -157,7 +153,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Login button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -175,7 +170,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Divider
                 Row(
                   children: [
                     const Expanded(child: Divider()),
@@ -191,7 +185,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // Google sign in
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -219,7 +212,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                // Sign up link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

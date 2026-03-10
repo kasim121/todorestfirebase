@@ -11,19 +11,13 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // On Android/iOS when google-services.json / GoogleService-Info.plist is
-  // provided, the native Firebase SDK auto-initializes the default app. Calling
-  // `Firebase.initializeApp()` again from Dart can cause a duplicate-app error.
-  // Only initialize manually on web, or when no native auto-init is present.
   try {
     if (kIsWeb) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
-  } catch (e) {
-    // Ignore initialization errors that come from already-initialized app.
-  }
+  } catch (e) {}
 
   runApp(const MyApp());
 }

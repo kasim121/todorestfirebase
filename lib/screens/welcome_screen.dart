@@ -20,7 +20,6 @@ class WelcomeScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 60),
-                  // Logo / Illustration
                   Container(
                     width: 120,
                     height: 120,
@@ -46,7 +45,6 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  // Title
                   const Text(
                     'TaskFlow',
                     style: TextStyle(
@@ -67,7 +65,6 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 60),
-                  // Feature highlights
                   _FeatureRow(
                     icon: Icons.bolt_rounded,
                     color: const Color(0xFFFFD700),
@@ -86,7 +83,6 @@ class WelcomeScreen extends StatelessWidget {
                     text: 'Secure Firebase authentication',
                   ),
                   const Spacer(),
-                  // Buttons
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(

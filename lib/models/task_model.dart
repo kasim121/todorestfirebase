@@ -5,7 +5,7 @@ class Task {
   final bool isCompleted;
   final DateTime createdAt;
   final DateTime? dueDate;
-  final String priority; // 'low', 'medium', 'high'
+  final String priority;
   final String userId;
 
   Task({

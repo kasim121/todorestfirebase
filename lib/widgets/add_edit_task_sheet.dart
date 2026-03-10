@@ -143,7 +143,6 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Handle
             Center(
               child: Container(
                 width: 40,
@@ -155,7 +154,6 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
                 ),
               ),
             ),
-            // Title
             Text(
               _isEditing ? 'Edit Task' : 'New Task',
               style: const TextStyle(
@@ -165,7 +163,6 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
               ),
             ),
             const SizedBox(height: 20),
-            // Task title input
             TextFormField(
               controller: _titleController,
               autofocus: !_isEditing,
@@ -182,7 +179,6 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
               },
             ),
             const SizedBox(height: 14),
-            // Description
             TextFormField(
               controller: _descriptionController,
               maxLines: 2,
@@ -194,7 +190,6 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
               ),
             ),
             const SizedBox(height: 20),
-            // Priority selector
             const Text(
               'Priority',
               style: TextStyle(
@@ -232,7 +227,6 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
               ],
             ),
             const SizedBox(height: 20),
-            // Due Date
             const Text(
               'Due Date',
               style: TextStyle(
@@ -286,7 +280,6 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
               ),
             ),
             const SizedBox(height: 28),
-            // Save button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

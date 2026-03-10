@@ -90,15 +90,10 @@ class _HomeScreenState extends State<HomeScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // App Bar
             _buildAppBar(context, firstName, authProvider),
-            // Stats
             _buildStats(taskProvider),
-            // Search bar
             if (_showSearch) _buildSearchBar(taskProvider),
-            // Filter tabs
             _buildTabs(),
-            // Task list
             Expanded(
               child: _buildTaskList(taskProvider, authProvider),
             ),

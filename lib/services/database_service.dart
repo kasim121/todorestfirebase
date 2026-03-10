@@ -3,11 +3,9 @@ import 'package:http/http.dart' as http;
 import '../models/task_model.dart';
 
 class DatabaseService {
-  // Replace with your Firebase project URL
   static const String _baseUrl =
       'https://todorestfb-default-rtdb.firebaseio.com';
 
-  /// Fetches all tasks for a user from Firebase Realtime Database via REST API
   Future<List<Task>> fetchTasks(String userId, String idToken) async {
     final url = Uri.parse(
         '$_baseUrl/tasks/$userId.json?auth=$idToken');
@@ -26,7 +24,6 @@ class DatabaseService {
         tasks.add(Task.fromJson(taskData));
       });
 
-      // Sort by createdAt descending
       tasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return tasks;
     } else if (response.statusCode == 401) {
@@ -36,7 +33,6 @@ class DatabaseService {
     }
   }
 
-  /// Adds a new task to Firebase Realtime Database via REST API (PUT with custom ID)
   Future<Task> addTask(Task task, String idToken) async {
     final url = Uri.parse(
         '$_baseUrl/tasks/${task.userId}/${task.id}.json?auth=$idToken');
@@ -56,7 +52,6 @@ class DatabaseService {
     }
   }
 
-  /// Updates an existing task in Firebase Realtime Database via REST API
   Future<Task> updateTask(Task task, String idToken) async {
     final url = Uri.parse(
         '$_baseUrl/tasks/${task.userId}/${task.id}.json?auth=$idToken');
@@ -76,7 +71,6 @@ class DatabaseService {
     }
   }
 
-  /// Deletes a task from Firebase Realtime Database via REST API
   Future<void> deleteTask(String userId, String taskId, String idToken) async {
     final url = Uri.parse(
         '$_baseUrl/tasks/$userId/$taskId.json?auth=$idToken');
@@ -92,7 +86,6 @@ class DatabaseService {
     }
   }
 
-  /// Toggles the completion status of a task
   Future<void> toggleTaskCompletion(
       String userId, String taskId, bool isCompleted, String idToken) async {
     final url = Uri.parse(

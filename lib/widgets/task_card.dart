@@ -99,7 +99,6 @@ class TaskCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Priority indicator bar
               Container(
                 width: 5,
                 height: 80,
@@ -113,7 +112,6 @@ class TaskCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Checkbox
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: GestureDetector(
@@ -141,7 +139,6 @@ class TaskCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Content
               Expanded(
                 child: Padding(
                   padding:
@@ -149,7 +146,6 @@ class TaskCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title row
                       Row(
                         children: [
                           Expanded(
@@ -170,7 +166,6 @@ class TaskCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          // Priority badge
                           if (!task.isCompleted) ...[
                             const SizedBox(width: 8),
                             Icon(priorityIcon,
@@ -178,7 +173,6 @@ class TaskCard extends StatelessWidget {
                           ],
                         ],
                       ),
-                      // Description
                       if (task.description.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
@@ -192,10 +186,8 @@ class TaskCard extends StatelessWidget {
                         ),
                       ],
                       const SizedBox(height: 6),
-                      // Bottom row
                       Row(
                         children: [
-                          // Date
                           if (task.dueDate != null) ...[
                             Icon(
                               Icons.calendar_today_rounded,

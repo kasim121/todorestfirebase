@@ -29,7 +29,6 @@ class TaskProvider extends ChangeNotifier {
   List<Task> get _filteredTasks {
     List<Task> result = _tasks;
 
-    // Apply search filter
     if (_searchQuery.isNotEmpty) {
       result = result.where((task) {
         return task.title
@@ -41,7 +40,6 @@ class TaskProvider extends ChangeNotifier {
       }).toList();
     }
 
-    // Apply status filter
     switch (_filter) {
       case TaskFilter.active:
         result = result.where((t) => !t.isCompleted).toList();
@@ -129,7 +127,6 @@ class TaskProvider extends ChangeNotifier {
     final updated = task.copyWith(isCompleted: !task.isCompleted);
     final index = _tasks.indexWhere((t) => t.id == task.id);
 
-    // Optimistic update
     if (index != -1) {
       _tasks[index] = updated;
       notifyListeners();
@@ -140,7 +137,6 @@ class TaskProvider extends ChangeNotifier {
           task.userId, task.id, !task.isCompleted, idToken);
       return true;
     } catch (e) {
-      // Revert on failure
       if (index != -1) {
         _tasks[index] = task;
         notifyListeners();

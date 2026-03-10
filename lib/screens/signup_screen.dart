@@ -74,12 +74,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
                 ),
                 const SizedBox(height: 32),
-                // Error message
                 if (authProvider.errorMessage != null) ...[
                   _ErrorBanner(message: authProvider.errorMessage!),
                   const SizedBox(height: 16),
                 ],
-                // Name
                 TextFormField(
                   controller: _nameController,
                   textCapitalization: TextCapitalization.words,
@@ -98,7 +96,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Email
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -115,7 +112,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Password
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -141,7 +137,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Confirm Password
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirm,
@@ -169,7 +164,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 const SizedBox(height: 32),
-                // Sign up button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -187,7 +181,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Divider
                 Row(
                   children: [
                     const Expanded(child: Divider()),
@@ -203,7 +196,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // Google sign up
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -231,7 +223,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                // Login link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

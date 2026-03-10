@@ -5,13 +5,10 @@ class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  /// Stream of authentication state changes
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  /// Current logged-in user
   User? get currentUser => _firebaseAuth.currentUser;
 
-  /// Sign up with email and password
   Future<UserCredential> signUpWithEmail({
     required String email,
     required String password,
@@ -21,13 +18,11 @@ class AuthService {
       email: email,
       password: password,
     );
-    // Update display name
     await credential.user?.updateDisplayName(displayName);
     await credential.user?.reload();
     return credential;
   }
 
-  /// Sign in with email and password
   Future<UserCredential> signInWithEmail({
     required String email,
     required String password,
@@ -38,7 +33,6 @@ class AuthService {
     );
   }
 
-  /// Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
     if (googleUser == null) return null;
@@ -54,23 +48,19 @@ class AuthService {
     return await _firebaseAuth.signInWithCredential(credential);
   }
 
-  /// Get the current ID token for REST API calls
   Future<String?> getIdToken() async {
     return await _firebaseAuth.currentUser?.getIdToken();
   }
 
-  /// Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
-  /// Sign out
   Future<void> signOut() async {
     await _googleSignIn.signOut();
     await _firebaseAuth.signOut();
   }
 
-  /// Parse Firebase Auth error codes into user-friendly messages
   static String getErrorMessage(String code) {
     switch (code) {
       case 'user-not-found':
