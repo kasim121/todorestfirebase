@@ -44,12 +44,18 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     _setLoading();
     try {
-      await _authService.signUpWithEmail(
+      final credential = await _authService.signUpWithEmail(
         email: email,
         password: password,
         displayName: displayName,
       );
+      final refreshedUser = await _authService.reloadCurrentUser();
+      _user = refreshedUser ?? credential.user ?? _authService.currentUser;
+      _status = _user != null
+          ? AuthStatus.authenticated
+          : AuthStatus.unauthenticated;
       _errorMessage = null;
+      notifyListeners();
       return true;
     } on FirebaseAuthException catch (e) {
       _setError(AuthService.getErrorMessage(e.code));
@@ -66,8 +72,17 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     _setLoading();
     try {
-      await _authService.signInWithEmail(email: email, password: password);
+      final credential = await _authService.signInWithEmail(
+        email: email,
+        password: password,
+      );
+      final refreshedUser = await _authService.reloadCurrentUser();
+      _user = refreshedUser ?? credential.user ?? _authService.currentUser;
+      _status = _user != null
+          ? AuthStatus.authenticated
+          : AuthStatus.unauthenticated;
       _errorMessage = null;
+      notifyListeners();
       return true;
     } on FirebaseAuthException catch (e) {
       _setError(AuthService.getErrorMessage(e.code));
@@ -84,10 +99,17 @@ class AuthProvider extends ChangeNotifier {
       final result = await _authService.signInWithGoogle();
       if (result == null) {
         _status = AuthStatus.unauthenticated;
+        _user = null;
         notifyListeners();
         return false;
       }
+      final refreshedUser = await _authService.reloadCurrentUser();
+      _user = refreshedUser ?? result.user ?? _authService.currentUser;
+      _status = _user != null
+          ? AuthStatus.authenticated
+          : AuthStatus.unauthenticated;
       _errorMessage = null;
+      notifyListeners();
       return true;
     } on FirebaseAuthException catch (e) {
       _setError(AuthService.getErrorMessage(e.code));

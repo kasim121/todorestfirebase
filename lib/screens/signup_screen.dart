@@ -31,15 +31,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
-    await context.read<AuthProvider>().signUp(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          displayName: _nameController.text.trim(),
-        );
+    final success = await context.read<AuthProvider>().signUp(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      displayName: _nameController.text.trim(),
+    );
+    if (success && mounted) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
   Future<void> _signUpWithGoogle() async {
-    await context.read<AuthProvider>().signInWithGoogle();
+    final success = await context.read<AuthProvider>().signInWithGoogle();
+    if (success && mounted) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
   @override
@@ -64,9 +70,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Text(
                   'Sign Up',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppTheme.textPrimary,
-                      ),
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -189,7 +195,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: Text(
                         'or continue with',
                         style: TextStyle(
-                            color: Colors.grey.shade500, fontSize: 13),
+                          color: Colors.grey.shade500,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                     const Expanded(child: Divider()),
@@ -218,7 +226,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       side: BorderSide(color: Colors.grey.shade300),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
@@ -233,8 +242,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     GestureDetector(
                       onTap: () => Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                            builder: (_) => const LoginScreen()),
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
                       ),
                       child: const Text(
                         'Sign In',
@@ -276,8 +284,7 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style:
-                  const TextStyle(color: AppTheme.errorColor, fontSize: 13),
+              style: const TextStyle(color: AppTheme.errorColor, fontSize: 13),
             ),
           ),
         ],

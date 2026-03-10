@@ -15,3 +15,7 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 # todorestfirebase
+
+## Features
+
+- Dark/light theme that can be switched from the profile menu on the home screen. Selection is persisted across restarts using `shared_preferences`.

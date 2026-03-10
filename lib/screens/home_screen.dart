@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/task_provider.dart';
+import '../providers/theme_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/task_card.dart';
 import '../widgets/add_edit_task_sheet.dart';
@@ -24,6 +25,10 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<TaskProvider>().setFilter(TaskFilter.all);
+    });
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         final taskProvider = context.read<TaskProvider>();
@@ -78,6 +83,123 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  Future<bool> _confirmClearTasks(TaskFilter filter, int count) async {
+    String label;
+    switch (filter) {
+      case TaskFilter.completed:
+        label = 'completed';
+        break;
+      case TaskFilter.active:
+        label = 'active';
+        break;
+      case TaskFilter.all:
+        label = 'all';
+        break;
+    }
+
+    final shouldClear = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Clear Tasks'),
+        content: Text('Delete $count $label task${count == 1 ? '' : 's'}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: AppTheme.errorColor),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return shouldClear ?? false;
+  }
+
+  Future<void> _clearTasksByFilter(TaskFilter filter) async {
+    final authProvider = context.read<AuthProvider>();
+    final taskProvider = context.read<TaskProvider>();
+
+    final count = switch (filter) {
+      TaskFilter.completed => taskProvider.completedCount,
+      TaskFilter.active => taskProvider.activeCount,
+      TaskFilter.all => taskProvider.totalCount,
+    };
+
+    if (count == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No tasks to clear')),
+      );
+      return;
+    }
+
+    final shouldClear = await _confirmClearTasks(filter, count);
+    if (!shouldClear || !mounted) return;
+
+    final token = await authProvider.getIdToken();
+    final userId = authProvider.user?.uid;
+
+    if (token == null || userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to clear tasks right now'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+      return;
+    }
+
+    final success = await taskProvider.deleteTasksByFilter(userId, token, filter);
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Tasks cleared successfully'),
+          backgroundColor: AppTheme.successColor,
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(taskProvider.errorMessage ?? 'Failed to clear tasks'),
+        backgroundColor: AppTheme.errorColor,
+      ),
+    );
+  }
+
+  Future<bool> _confirmSignOut() async {
+    final shouldSignOut = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text(
+              'Sign Out',
+              style: TextStyle(color: AppTheme.errorColor),
+            ),
+          ),
+        ],
+      ),
+    );
+    return shouldSignOut ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
@@ -91,9 +213,10 @@ class _HomeScreenState extends State<HomeScreen>
         child: Column(
           children: [
             _buildAppBar(context, firstName, authProvider),
+
             _buildStats(taskProvider),
             if (_showSearch) _buildSearchBar(taskProvider),
-            _buildTabs(),
+            _buildTabs(taskProvider),
             Expanded(
               child: _buildTaskList(taskProvider, authProvider),
             ),
@@ -230,30 +353,72 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildTabs() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          color: AppTheme.primaryColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        indicatorSize: TabBarIndicatorSize.tab,
-        indicatorPadding: const EdgeInsets.all(4),
-        labelColor: Colors.white,
-        unselectedLabelColor: AppTheme.textSecondary,
-        labelStyle: const TextStyle(
-            fontWeight: FontWeight.w600, fontSize: 13),
-        dividerColor: Colors.transparent,
-        tabs: const [
-          Tab(text: 'All'),
-          Tab(text: 'Active'),
-          Tab(text: 'Completed'),
+  Widget _buildTabs(TaskProvider taskProvider) {
+    final selectedFilter = taskProvider.filter;
+    final clearCount = switch (selectedFilter) {
+      TaskFilter.completed => taskProvider.completedCount,
+      TaskFilter.active => taskProvider.activeCount,
+      TaskFilter.all => taskProvider.totalCount,
+    };
+    final canShowClearAction = switch (selectedFilter) {
+      TaskFilter.all => clearCount > 1,
+      TaskFilter.active => clearCount > 1,
+      TaskFilter.completed => clearCount > 1,
+    };
+    final clearLabel = switch (selectedFilter) {
+      TaskFilter.completed => 'Clear Completed',
+      TaskFilter.active => 'Clear Active',
+      TaskFilter.all => 'Clear All',
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: AppTheme.primaryColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorPadding: const EdgeInsets.all(4),
+              labelColor: Colors.white,
+              unselectedLabelColor: AppTheme.textSecondary,
+              labelStyle: const TextStyle(
+                  fontWeight: FontWeight.w600, fontSize: 13),
+              dividerColor: Colors.transparent,
+              tabs: const [
+                Tab(text: 'All'),
+                Tab(text: 'Active'),
+                Tab(text: 'Completed'),
+              ],
+            ),
+          ),
+          if (canShowClearAction)
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () => _clearTasksByFilter(selectedFilter),
+                icon: const Icon(
+                  Icons.delete_sweep_rounded,
+                  size: 18,
+                  color: AppTheme.errorColor,
+                ),
+                label: Text(
+                  '$clearLabel ($clearCount)',
+                  style: const TextStyle(
+                    color: AppTheme.errorColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -306,7 +471,17 @@ class _HomeScreenState extends State<HomeScreen>
           final task = tasks[index];
           return TaskCard(
             task: task,
-            onTap: () => _openEditTaskSheet(task),
+            onTap: () {
+              if (task.isCompleted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Completed tasks cannot be edited'),
+                  ),
+                );
+                return;
+              }
+              _openEditTaskSheet(task);
+            },
             onToggle: () async {
               final token = await authProvider.getIdToken();
               if (token != null) {
@@ -459,6 +634,41 @@ class _HomeScreenState extends State<HomeScreen>
             const Divider(),
             const SizedBox(height: 8),
             ListTile(
+              leading: Consumer<ThemeProvider>(
+                builder: (_, themeProvider, __) => Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: themeProvider.isDark
+                        ? AppTheme.textSecondary.withAlpha(20)
+                        : AppTheme.primaryColor.withAlpha(20),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    themeProvider.isDark
+                        ? Icons.wb_sunny_rounded
+                        : Icons.nightlight_round_rounded,
+                    color: themeProvider.isDark
+                        ? AppTheme.textSecondary
+                        : AppTheme.primaryColor,
+                  ),
+                ),
+              ),
+              title: Consumer<ThemeProvider>(
+                builder: (_, themeProvider, __) => Text(
+                  themeProvider.isDark ? 'Light Mode' : 'Dark Mode',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: themeProvider.isDark
+                          ? AppTheme.textSecondary
+                          : AppTheme.textPrimary),
+                ),
+              ),
+              onTap: () {
+                context.read<ThemeProvider>().toggle();
+              },
+            ),
+            const SizedBox(height: 8),
+            ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -475,6 +685,10 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               onTap: () async {
                 Navigator.pop(context);
+                final shouldSignOut = await _confirmSignOut();
+                if (!shouldSignOut || !mounted) {
+                  return;
+                }
                 context.read<TaskProvider>().clearTasks();
                 await authProvider.signOut();
               },

@@ -28,14 +28,21 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     final authProvider = context.read<AuthProvider>();
-    await authProvider.signIn(
+    final success = await authProvider.signIn(
       email: _emailController.text.trim(),
       password: _passwordController.text,
     );
+    if (success && mounted) {
+      // pop back to root; AuthWrapper will then show HomeScreen.
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
   Future<void> _loginWithGoogle() async {
-    await context.read<AuthProvider>().signInWithGoogle();
+    final success = await context.read<AuthProvider>().signInWithGoogle();
+    if (success && mounted) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
   Future<void> _resetPassword() async {

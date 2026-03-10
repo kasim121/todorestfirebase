@@ -137,12 +137,13 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Center(
               child: Container(
                 width: 40,
@@ -296,7 +297,8 @@ class _AddEditTaskSheetState extends State<AddEditTaskSheet> {
                     : Text(_isEditing ? 'Update Task' : 'Add Task'),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

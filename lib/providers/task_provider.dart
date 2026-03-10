@@ -55,11 +55,13 @@ class TaskProvider extends ChangeNotifier {
   }
 
   void setFilter(TaskFilter filter) {
+    if (_filter == filter) return;
     _filter = filter;
     notifyListeners();
   }
 
   void setSearchQuery(String query) {
+    if (_searchQuery == query) return;
     _searchQuery = query;
     notifyListeners();
   }

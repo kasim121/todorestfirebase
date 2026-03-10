@@ -4,20 +4,31 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
 import 'providers/task_provider.dart';
+import 'providers/theme_provider.dart';
 import 'utils/app_theme.dart';
 import 'widgets/auth_wrapper.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Attempt to initialize Firebase; if the default app already exists we
+  // ignore the `duplicate-app` error which commonly occurs on hot restart.
   try {
-    if (kIsWeb) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+    debugPrint('Initializing Firebase...');
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    debugPrint('Firebase successfully initialized');
+  } on FirebaseException catch (e) {
+    if (e.code == 'duplicate-app') {
+      debugPrint('Firebase already initialized, continuing');
+    } else {
+      debugPrint('Firebase initialization error: $e');
     }
-  } catch (e) {}
+  } catch (e, st) {
+    debugPrint('Unexpected Firebase initialization error: $e');
+    debugPrint('$st');
+  }
 
   runApp(const MyApp());
 }
@@ -31,12 +42,17 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: MaterialApp(
-        title: 'TaskFlow',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const AuthWrapper(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) => MaterialApp(
+          title: 'TaskFlow',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeProvider.mode,
+          home: const AuthWrapper(),
+        ),
       ),
     );
   }

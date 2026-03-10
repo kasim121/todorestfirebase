@@ -167,4 +167,16 @@ class AppTheme {
         return Icons.drag_handle_rounded;
     }
   }
+
+  // Convenience accessors for colors derived from the current theme's color scheme.
+  // These mirror the helpers that were previously referenced from widgets.
+  static Color surface(BuildContext context) =>
+      Theme.of(context).colorScheme.surface;
+
+  static Color onSurface(BuildContext context) =>
+      Theme.of(context).colorScheme.onSurface;
+
+  static Color onSurfaceVariant(BuildContext context) =>
+      Theme.of(context).colorScheme.onSurfaceVariant;
 }
+

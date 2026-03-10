@@ -104,4 +104,23 @@ class DatabaseService {
       throw Exception('Failed to toggle task: ${response.statusCode}');
     }
   }
+
+  /// Deletes all tasks for the given user by removing the user node.
+  ///
+  /// This simply sends a DELETE request to the user-level endpoint and does
+  /// not return any value. Errors are thrown for non‑200 responses just like
+  /// other methods in this service.
+  Future<void> deleteAllTasks(String userId, String idToken) async {
+    final url = Uri.parse('$_baseUrl/tasks/$userId.json?auth=$idToken');
+
+    final response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      return;
+    } else if (response.statusCode == 401) {
+      throw Exception('Unauthorized: Token expired');
+    } else {
+      throw Exception('Failed to delete all tasks: ${response.statusCode}');
+    }
+  }
 }
