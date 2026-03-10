@@ -20,7 +20,7 @@ class StatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.surface(context),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -53,9 +53,9 @@ class StatsCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppTheme.textSecondary,
+              color: AppTheme.onSurfaceVariant(context),
               fontWeight: FontWeight.w500,
             ),
           ),

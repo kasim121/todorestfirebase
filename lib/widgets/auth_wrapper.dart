@@ -31,7 +31,6 @@ class _SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -61,12 +60,12 @@ class _SplashScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'TaskFlow',
+            Text(
+              'TaskMe',
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w800,
-                color: AppTheme.textPrimary,
+                color: AppTheme.onSurface(context),
                 letterSpacing: -0.5,
               ),
             ),

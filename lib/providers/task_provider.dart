@@ -122,6 +122,42 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> deleteAllTasks(String userId, String idToken) async {
+    try {
+      await _dbService.deleteAllTasks(userId, idToken);
+      _tasks = [];
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> deleteTasksByFilter(
+      String userId, String idToken, TaskFilter filter) async {
+    if (filter == TaskFilter.all) {
+      return deleteAllTasks(userId, idToken);
+    }
+    final toDelete = _tasks
+        .where((t) =>
+            filter == TaskFilter.completed ? t.isCompleted : !t.isCompleted)
+        .toList();
+    try {
+      for (final task in toDelete) {
+        await _dbService.deleteTask(userId, task.id, idToken);
+        _tasks.removeWhere((t) => t.id == task.id);
+      }
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<bool> toggleTaskCompletion(
       Task task, String idToken) async {
     final updated = task.copyWith(isCompleted: !task.isCompleted);

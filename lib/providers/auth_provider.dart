@@ -21,13 +21,18 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void _init() {
+    // Resolve immediately from currentUser so the splash screen is never stuck.
+    // The stream will still handle subsequent sign-in / sign-out events.
+    final currentUser = _authService.currentUser;
+    _user = currentUser;
+    _status = currentUser != null
+        ? AuthStatus.authenticated
+        : AuthStatus.unauthenticated;
+
     _authService.authStateChanges.listen((user) {
       _user = user;
-      if (user != null) {
-        _status = AuthStatus.authenticated;
-      } else {
-        _status = AuthStatus.unauthenticated;
-      }
+      _status =
+          user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
       notifyListeners();
     });
   }
